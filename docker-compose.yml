@@ -1,0 +1,30 @@
+version: "3.8"
+
+services:
+  tta-bot:
+    build: .
+    container_name: tta-bot
+    restart: unless-stopped
+    ports:
+      - "1488:1488"
+    environment:
+      - BOT_TOKEN=${BOT_TOKEN}
+      - ADMIN_ID=${ADMIN_ID}
+      - PORT=1488
+    env_file:
+      - .env
+    volumes:
+      # Монтируем .env файл (опционально)
+      - ./.env:/app/.env:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:1488/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - bot-network
+
+networks:
+  bot-network:
+    driver: bridge
